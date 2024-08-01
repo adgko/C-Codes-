@@ -34,7 +34,7 @@ El diseño debe contemplar toda situación no descripta en el presente documento
 ## Desarrollo
 
 Diagrama del Programa:
-![](https://github.com/adgko/C-Codes-/blob/main/01_IPC/img/Diagrama%20de%20Sistema.png)
+![](https://github.com/adgko/C-Codes-/blob/main/01_IPC/img/Diagrama%20de%20Sistema.jpg)
 
 ### Delivery Manager
 Para el desarrollo del Delivery Manager se trabajó en los siguientes puntos.
