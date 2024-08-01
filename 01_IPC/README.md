@@ -3,6 +3,11 @@ Este programa fue una consigna de la materia Sistemas Operativos 2 para evaluar 
 
 El requerimiento era generar un socket Servidor al que se conectaran sockets Clientes, el Servidor es un Delivery Manager usando el patrón [Publisher Subscriber](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern "Publisher Subscriber") que tiene de su lado procesos que funcionan como productores y puede enviar mensajes producidos por dichos productores a los clientes seleccionados.
 
+## Instalación
+Para instalar este proyecto, se debe tener instalada la biblioteca de zip que se encuentra en [este](https://github.com/kuba--/zip) repo público y usar el archivo de makefile que viene en el mismo.
+
+`make`
+
 ## Requerimientos
 
 ### Delivery Manager
@@ -107,3 +112,37 @@ Dependiendo lo que ingresa, es lo que ocurre.
  - Comando `add`busca en la lista de conectados el que coincida con la ip y puerto suministrada en `parámetro` y le cambia la flag de suscripto a `1` que indique el `argumento` (1, 2 o 3).
  - Comando `delete` busca en la lista de conectados el que coincida con la ip y puerto suministrada en `parámetro` y le cambia la flag de suscripto a `0` que indique el `argumento` (1, 2 o 3).
  - Comando `log` busca en la lista de conectados el que coincida con la ip y puerto suministrada en `parámetro` y le envía un mensaje de descarga. De ahí se encarga el proceso `file`.
+ 
+### Socket Cliente
+El socket Cliente no es muy complejo realmente. Tiene la configuración de socket de internet para recibir por parámetro la ip y puerto al que debe conectarse. 
+Una vez conectado al Delivery Manager, solo espera la llegada de mensajes, a los cuales separa en dos partes, la primera es el hash md5 enviado y la segunda el mensaje propiamente dicho. Calcula el hash del mensaje y lo compara con lo primero que llegó para saber si es correcto. En ese caso, lo imprime en pantalla y nada más.
+
+Además, el cliente valúa los mensajes para ver si es la orden de download. En ese caso, abre un proceso hijo que consiste en un nuevo socket que se conectará a `File` y recibirá un archivo.
+
+### Envío de Log
+Para hacer este proceso, se armaron dos procesos apartes. File es invocado por Delivery Manager cuando arranca y estará siempre corriendo esperando una conexión de Downloader. 
+El proceso consiste en que CLI envía un mensaje de log ocon la ip y puerto de un socket cliente. Delivery Manager llama a la función `zipear()` construida con la biblioteca zip obtenida de este [repo](https://github.com/kuba--/zip). Luego envía el mensaje de descarga al cliente y continúa con su tarea.
+Downloader por otro lado, es creado por un socket cliente que recibe una descarga, este se conecta con File, negocia y recibe el log, y se cierra.
+El funcionamiento se puede ver en el siguiente diagrama.
+
+```seq
+DeliveryManager-->File: creación
+Note left of DeliveryManager: zip()
+DeliveryManager->Cliente: download
+Cliente-->Downloader: creación
+Downloader-->File: Connexión
+Note right of File: Leer log
+File->Downloader: envía tamaño
+Downloader->File:  recibido
+File->Downloader: envía hash md5
+Downloader->File:  recibido
+File->Downloader: envía log
+Downloader->File:  recibido
+Downloader-->File:  cierra conexión
+Note left of Downloader: cierre
+```
+#### File
+El código de File consiste en configurar el socket y esperar conexiones. Cuando se conecta un cliente, abre el log, obtiene su tamaño y hash md5, y lo envía al Downloader, para luego enviar el archivo. Al terinar, se queda esperando nuevas conexiones.
+
+#### Downloader
+Este código tiene una parte de configurar el socket y conectarse a File. Una vez conectado, recibe tamaño de archivo, confirma, luego recibe hash md5, confirma, y recibe el archivo, empleando el tamaño recibido para saber cuanto debe recibir. Cuando recibe el archivo, le calcula el hash md5 y lo comparo con lo que recibió para corroborar que no se haya corrompido en el envío.  Si el archivo está validado, envía una confirmación, de lo contrario, lo elimina y avisa que no se transfirió con éxito. Al finalizar, cierra la conexión y se cierra el proceso.

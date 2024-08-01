@@ -23,32 +23,10 @@ int32_t main()
 	while (1)
 	{
 		conectar_cliente();
-		/*
-			FILE*  file= fopen(IMAGES_PATH, "r");
-			if ( file != NULL ) {
-				int32_t fd=fileno(file);
-				struct stat file_stat;
-				fstat(fd, &file_stat);
-				if ((sendfile(sockfd, fd, 0,(size_t) file_stat.st_size)) < 0) {
-					perror("error al transferir archivo");
-					exit(1);
-				}
-				fclose(file);
-				//una vez terminada la transferencia se envia EOF para indicar la finalizacion
-				strcpy(buffer,"EOF");
-				send(sockfd,buffer,sizeof(buffer),0);
-				printf("Terminando descarga\n");
-			}
-			else {
-				perror("archivo inexistente\n");
-			}
-
-		*/
 
 		// char *mensaje = "conexión";
 
 		n = send(sock_cli, "conexion", strlen("conexion"), 0);
-		// n = send( sock_cli, mensaje, strlen(mensaje),0 );
 		if (n < 0)
 		{
 			perror("fallo en enviar info");
@@ -124,7 +102,7 @@ void configurar_socket()
 }
 
 /*
-	Abre conexión para que se conecte un clietne
+	Abre conexión para que se conecte un cliente
 */
 void escuchando()
 {
@@ -165,20 +143,7 @@ void read_log()
         //exit(EXIT_FAILURE);
     }
 	*logsize = size;
-
-	// char *md5s = md5(img, 0);
 	logmd5 = md5(img, 0);
-
-	// if(md5s != NULL){}
-	//if (logmd5 != NULL)
-	//{
-	//}
-
-	// guarda en buffer el tamaño y hash para enviar
-	// sprintf(buffer, "Download %s %s", size_s, md5s);
-
-	// Envía la imagen por socket
-	// enviar_imagen(img, &size);
 }
 
 /*
@@ -223,159 +188,4 @@ void enviar_log() {
 
     fclose(imgn);
 }
-/*
-void enviar_log(){
-	int32_t imgfd;
-	char img[TAM];
-	long size = 0;
 
-	sprintf(img, "%s", IMAGES_PATH); // Path de la imagen
-//	imgfd = open(img, O_RDONLY);
-//	if(imgfd == -1)
-//  		{
-//    		perror("error");
-//    		exit(EXIT_FAILURE);
-//  		}
-//	printf("%s Enviando log %s\n",KBLU,KNRM);
-
-	FILE *imgn = fopen(img, "r");
-    if (imgn == NULL) {
-        perror("Error al abrir el archivo");
-        exit(1);
-    }
-
-//	size_t to_send = (size_t) size;
-//  	ssize_t sent;
-//	off_t offset = 0;
-
-	// Obtener el tamaño del archivo
-    fseek(imgn, 0, SEEK_END);
-    size = ftell(imgn);
-    fseek(imgn, 0, SEEK_SET);
-
-//	while(((sent = sendfile(sock_cli, imgfd, &offset, to_send)) > 0)
-//			&& (to_send > 0))
-//	{
-//		to_send -= (size_t) sent;
-//		printf(" %sSe envió %lu %s\n", KGRN, sent, KNRM);
-//	}
-
-//	if (sent == 0 && to_send == 0) {
-  //  printf("Se ha enviado todo el archivo correctamente\n");
-//} else {
-  //  perror("Error al enviar el archivo");
-    //exit(1);/
-//}
-
-//	printf(" %sSe envió %lu %s\n", KGRN, size, KNRM);
-
-//	close(imgfd);
-
-	// Leer y enviar el archivo en fragmentos
-    size_t bytes_read;
-    while ((bytes_read = fread(buffer, 1, TAM, imgn)) > 0) {
-        if (send(sock_cli, buffer, bytes_read, 0) == -1) {
-            perror("Error al enviar el archivo");
-            exit(1);
-        }
-    }
-
-    fclose(imgn);
-}
-*/
-/*
-		FILE * fp;
-	char * line = NULL;
-	size_t len = 0;
-	ssize_t read;
-
-	fp = fopen("/home/diego/Escritorio/Sistemas-Operativos-2/TP1/soii-2021-ipc-adgko/archivos/logs/productor_1.log", "r");
-	if (fp == NULL)
-		exit(EXIT_FAILURE);
-
-	while ((read = getline(&line, &len, fp)) != -1) {
-		printf("Retrieved line of length %zu:\n", read);
-		printf("%s", line);
-	}
-
-	fclose(fp);
-	if (line)
-		free(line);
-*/
-// read_log();
-
-// n = recv( sock_cli, buffer, TAM-1, MSG_WAITALL );
-//			if ( n < 0 ) {
-//		 	 perror( "lectura de socket" );
-//			  exit(1);
-//			}
-
-//	printf( "%sRecibí: %s%s\n", KBLU,buffer,KNRM );
-//    n = send( sock_cli, "12341234 respuesta", strlen("12341234 respuesta"),0 );
-//									if(n < 0){
-//										perror("fallo en enviar info");
-//									}
-
-//	n = recv(sock_cli, buffer, TAM - 1, MSG_WAITALL);
-//   if (n < 0) {
-//       perror("lectura de socket");
-//       exit(1);
-//   }
-// if(n == 0){printf("Se cerró la comunicación\n");}
-// A ver si llegó
-/*n = recv( sock_cli, buffer, TAM-1, MSG_WAITALL );
-			if ( n < 0 ) {
-			  perror( "lectura de socket" );
-			  exit(1);
-			}
-
-
-			printf( "%sRecibí: %s%s\n", KBLU,buffer,KNRM );
-memset( buffer, 0, TAM );
-*/
-
-/*	FILE *imgn;
-	imgn = fopen(IMAGES_PATH, "rb");
-	if(imgn == NULL)
-	{
-		perror("file");
-	}
-
-	char buffer[TAM];
-		size_t bytesRead;
-		while ((bytesRead = fread(buffer, 1, sizeof(buffer), imgn)) > 0) {
-			if (send(sock_cli, buffer, bytesRead, 0) == -1) {
-				perror("Error al enviar datos al cliente");
-				break;
-			}
-		}
-
-		// Enviar indicador de fin de archivo
-		send(sock_cli, "EOF", 3, 0);
-
-		// Cerrar el archivo y conexión con el cliente
-		fclose(imgn);
-*/
-// n = send(sock_cli,logsize,sizeof(long),0);
-// if(n<0) {
-//	perror("fallo en enviar info");
-//	}
-
-// en caso de exito se abre el archivo y se inicia transferencia por medio de sendFile
-
-/*
-	FILE*  file= fopen(IMAGES_PATH, "r");
-	if ( file != NULL ) {
-		int32_t fd=fileno(file);
-		struct stat file_stat;
-		fstat(fd, &file_stat);
-		if ((sendfile(sock_cli, fd, 0,(size_t) file_stat.st_size)) < 0) {
-			perror("error al transferir archivo");
-			exit(1);
-		}
-		fclose(file);
-		//una vez terminada la transferencia se envia EOF para indicar la finalizacion
-		strcpy(buffer,"EOF");
-		send(sock_cli,buffer,sizeof(buffer),0);
-		printf("Terminando descarga\n");
-*/
