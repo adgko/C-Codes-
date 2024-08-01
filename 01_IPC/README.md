@@ -125,22 +125,8 @@ El proceso consiste en que CLI envía un mensaje de log ocon la ip y puerto de u
 Downloader por otro lado, es creado por un socket cliente que recibe una descarga, este se conecta con File, negocia y recibe el log, y se cierra.
 El funcionamiento se puede ver en el siguiente diagrama.
 
-```seq
-DeliveryManager-->File: creación
-Note left of DeliveryManager: zip()
-DeliveryManager->Cliente: download
-Cliente-->Downloader: creación
-Downloader-->File: Connexión
-Note right of File: Leer log
-File->Downloader: envía tamaño
-Downloader->File:  recibido
-File->Downloader: envía hash md5
-Downloader->File:  recibido
-File->Downloader: envía log
-Downloader->File:  recibido
-Downloader-->File:  cierra conexión
-Note left of Downloader: cierre
-```
+![](https://github.com/adgko/C-Codes-/blob/main/01_IPC/img/DiagramaArchivo.png)
+
 #### File
 El código de File consiste en configurar el socket y esperar conexiones. Cuando se conecta un cliente, abre el log, obtiene su tamaño y hash md5, y lo envía al Downloader, para luego enviar el archivo. Al terinar, se queda esperando nuevas conexiones.
 
