@@ -1,7 +1,7 @@
 #include "../include/cliente.h"
 #define puerto_downloader 8021
 #define puerto_files 8020
-#define archivo_destino  "/home/diego/Descargas/log.zip"
+#define archivo_destino  "/your/directory"
 
 int32_t sockfd, sockfil;
 struct sockaddr_in serv_addr;

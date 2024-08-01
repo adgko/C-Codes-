@@ -1,6 +1,6 @@
 #include "../include/deliverymanager.h"
 #define puerto_files 8020
-#define IMAGES_PATH "/home/diego/Escritorio/Sistemas-Operativos-2/TP1/soii-2021-ipc-adgko/bin/log.zip"
+#define IMAGES_PATH "/your/directory/log.zip"
 
 int32_t sockfd, sock_cli;
 struct sockaddr_in serv_addr;
