@@ -80,3 +80,18 @@ Se pide además que se guarde el resultado en un formado de imagenes (png por ej
 Se debe considerar que cada canal es una matriz, pero sólo hay datos dentro de la circunferencia de la tierra. No se deben realizar operaciones fuera de este.
 El diseño debe contemplar toda situación no descripta en el presente documento y se debe hacer un correcto manejo de errores. 
 
+## Desarrollo
+### Programa Secuencial
+Una vez entendido los puntos necesarios, se desarrolló el código secuencial que realiza los pasos que están descritos arriba en python, pero en leguaje C. Para el manejo de imagen BMP se empleó una biblioteca suministrada por la cátedra.
+
+### Programa Paralelo
+Una vez hecho funcionar el programa de manera secuencial, se proedió a modificarlo para hacerlo paralelo y emplear la biblioteca `<omp.h>`
+
+El proceso de paralelizar el código consistió en agregar pragmas para el compilador en la sección del bucle `for` recorre la matriz de la imagen, empleando la clausula `colapse`
+
+`#pragma omp for collapse(2)`
+
+Para ejecutar, se programó para recibir por parámetro con cuantos hilos debía trabajar el programa.
+
+### Problemas encontrados que hubo que tener en cuenta
+La forma de recorrer la memoria en C represente un arreglo unidimensional, por lo que los saltos de fila en la matriz, se corresponden a grandes desplazamientos en columnas. Se ajustó el código de manera matricial y se dio las distintas filas a distintos hilos de ejecución.
